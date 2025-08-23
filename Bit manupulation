@@ -1,0 +1,23 @@
+class Solution {
+    public int divide(int dividend, int divisor) {
+        if (dividend == Integer.MIN_VALUE && divisor == -1) return Integer.MAX_VALUE;
+        if (dividend == Integer.MIN_VALUE && divisor == 1) return Integer.MIN_VALUE;
+
+        boolean negative = (dividend < 0) ^ (divisor < 0);
+
+
+long a=Math.abs((long)dividend);
+long b=Math.abs((long)divisor);
+long  q=0;
+
+while(a>=b){
+int c=0;
+while(a>=(b<<(c+1))){
+    c++;
+}
+q=q+(1<<c);
+a=a-(b<<c);
+}
+        return negative ?(int) (-q) :( int)(q);
+    }
+}
