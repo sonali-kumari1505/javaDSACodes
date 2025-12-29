@@ -1,0 +1,78 @@
+import java.io.*;
+import java.util.*;
+
+public class arraydescription {
+    static final int MOD = 1000000007;
+
+    // Fast input
+    static class FastScanner {
+        private final byte[] buffer = new byte[1 << 16];
+        private int ptr = 0, len = 0;
+        private final InputStream in = System.in;
+
+        int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+                if (len <= 0) return -1;
+            }
+            return buffer[ptr++];
+        }
+
+        int nextInt() throws IOException {
+            int c, sign = 1, val = 0;
+            do c = read(); while (c <= ' ');
+            if (c == '-') { sign = -1; c = read(); }
+            while (c > ' ') {
+                val = val * 10 + (c - '0');
+                c = read();
+            }
+            return val * sign;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        FastScanner sc = new FastScanner();
+
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++)
+            a[i] = sc.nextInt();
+
+        long[] prev = new long[m + 2];
+        long[] curr = new long[m + 2];
+
+        // Base case
+        if (a[0] == 0) {
+            for (int x = 1; x <= m; x++)
+                prev[x] = 1;
+        } else {
+            prev[a[0]] = 1;
+        }
+
+        // DP
+        for (int i = 1; i < n; i++) {
+            Arrays.fill(curr, 0);
+
+            for (int x = 1; x <= m; x++) {
+                if (a[i] != 0 && a[i] != x) continue;
+
+                curr[x] = prev[x];
+                curr[x] = (curr[x] + prev[x - 1]) % MOD;
+                curr[x] = (curr[x] + prev[x + 1]) % MOD;
+            }
+
+            long[] temp = prev;
+            prev = curr;
+            curr = temp;
+        }
+
+        long ans = 0;
+        for (int x = 1; x <= m; x++)
+            ans = (ans + prev[x]) % MOD;
+
+        System.out.println(ans);
+    }
+}
