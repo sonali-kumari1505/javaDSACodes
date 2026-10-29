@@ -1,0 +1,80 @@
+class Solution {
+    // Finds the duplicate and missing numbers by separating XOR results.
+    public int[] findNumbers(int[] nums) {
+        int n = nums.length;
+        int xorAll = 0;
+
+        // Cancel all values that occur once in both collections.
+        for (int value : nums) xorAll ^= value;
+        for (int value = 1; value <= n; value++) xorAll ^= value;
+
+        int rightmostSetBit = xorAll & -xorAll;
+//find the rightmost set bit using above strategy
+        int first = 0;
+        int second = 0;
+
+        // Partition the input according to the differing bit.
+        for (int value : nums) {
+            // Place the value in the group selected by the differing bit.
+            if ((value & rightmostSetBit) != 0) {
+                first ^= value;
+            } else {
+                second ^= value;
+            }
+        }
+
+        // Partition the expected range in the same way.
+        for (int value = 1; value <= n; value++) {
+            // Place the value in the group selected by the differing bit.
+            if ((value & rightmostSetBit) != 0) {
+                first ^= value;
+            } else {
+                second ^= value;
+            }
+        }
+
+        // Determine which survivor actually appears twice.
+        int firstCount = 0;
+        for (int value : nums) {
+            // Count how often the first result appears in the input.
+            if (value == first) {
+                firstCount++;
+            }
+        }
+
+        // Return the result that appears twice as the duplicate.
+        if (firstCount == 2) {
+            return new int[] {first, second};
+        }
+        return new int[] {second, first};
+    }
+
+ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ class Solution {
+    // Finds the duplicate and missing numbers using sums and square sums.
+    public int[] findNumbers(int[] nums) {
+        long n = nums.length;
+        long actualSum = 0;
+        long actualSquareSum = 0;
+
+        // Accumulate the two actual totals using wide integers.
+        for (long value : nums) {
+            actualSum += value;
+            actualSquareSum += value * value;
+        }
+
+        long expectedSum = n * (n + 1) / 2;
+        long expectedSquareSum = n * (n + 1) * (2 * n + 1) / 6;
+        long difference = actualSum - expectedSum;
+        long sumOfAnswers = (actualSquareSum - expectedSquareSum) / difference;
+
+        // Use the sum and difference of the answers to find both numbers.
+        long repeating = (difference + sumOfAnswers) / 2;
+        long missing = repeating - difference;
+        return new int[] {(int) repeating, (int) missing};
+    }
+}
+
+
+
+
